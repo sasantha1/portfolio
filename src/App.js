@@ -123,24 +123,37 @@ function App() {
               <div className="shape shape-2"></div>
               <div className="shape shape-3"></div>
             </div>
-            <div className="profile-card">
-              <div className="code-snippet">
-                <div className="code-line">
-                  <span className="code-keyword">const</span> developer = {'{'}
+            <div className="profile-photo-container">
+              <div className="profile-photo-wrapper">
+                <img 
+                  src="/profile-photo.jpg" 
+                  alt="Sasantha Sanju" 
+                  className="profile-photo"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                  }}
+                />
+                <div className="profile-card" style={{display: 'none'}}>
+                  <div className="code-snippet">
+                    <div className="code-line">
+                      <span className="code-keyword">const</span> developer = {'{'}
+                    </div>
+                    <div className="code-line indent">
+                      name: <span className="code-string">"Sasantha Sanju"</span>,
+                    </div>
+                    <div className="code-line indent">
+                      location: <span className="code-string">"Badulla, Sri Lanka"</span>,
+                    </div>
+                    <div className="code-line indent">
+                      role: <span className="code-string">"Software Engineer"</span>,
+                    </div>
+                    <div className="code-line indent">
+                      skills: [<span className="code-string">"React"</span>, <span className="code-string">"TypeScript"</span>, <span className="code-string">"Node.js"</span>]
+                    </div>
+                    <div className="code-line">{'}'}</div>
+                  </div>
                 </div>
-                <div className="code-line indent">
-                  name: <span className="code-string">"Sasantha Sanju"</span>,
-                </div>
-                <div className="code-line indent">
-                  location: <span className="code-string">"Badulla, Sri Lanka"</span>,
-                </div>
-                <div className="code-line indent">
-                  role: <span className="code-string">"Software Engineer"</span>,
-                </div>
-                <div className="code-line indent">
-                  skills: [<span className="code-string">"React"</span>, <span className="code-string">"TypeScript"</span>, <span className="code-string">"Node.js"</span>]
-                </div>
-                <div className="code-line">{'}'}</div>
               </div>
             </div>
           </div>
