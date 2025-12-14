@@ -82,7 +82,7 @@ function App() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <div className="nav-logo" onClick={() => scrollToSection('home')}>
-            <span className="logo-text">Sasantha</span>
+            <span className="logo-text">Sasantha Sanju</span>
           </div>
           <ul className="nav-menu">
             <li><a href="#home" className={activeSection === 'home' ? 'active' : ''} onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Home</a></li>
