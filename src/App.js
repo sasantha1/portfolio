@@ -185,11 +185,11 @@ function App() {
               </p>
               <div className="about-stats">
                 <div className="stat-item">
-                  <div className="stat-number">5+</div>
+                  <div className="stat-number">4+</div>
                   <div className="stat-label">Repositories</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-number">10+</div>
+                  <div className="stat-number">6+</div>
                   <div className="stat-label">Technologies</div>
                 </div>
                 <div className="stat-item">
