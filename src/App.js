@@ -1,342 +1,418 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
+import { DecoderText } from './components/DecoderText';
+import { SiteHeader } from './components/SiteHeader';
+import { ContactPage } from './pages/ContactPage';
 
-function App() {
+const DisplacementSphere = lazy(() =>
+  import('./components/DisplacementSphere').then((m) => ({
+    default: m.DisplacementSphere,
+  }))
+);
+
+const HERO_LINE1 = 'Software';
+const HERO_ROLES = ['Engineer', 'Architect', 'Builder', 'Collaborator'];
+
+function useInterval(callback, delay) {
+  const saved = useRef(callback);
+  useEffect(() => {
+    saved.current = callback;
+  });
+  useEffect(() => {
+    if (delay === null) return undefined;
+    const id = window.setInterval(() => saved.current(), delay);
+    return () => window.clearInterval(id);
+  }, [delay]);
+}
+
+function publicAsset(path) {
+  const base = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+  return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
+function ProjectShowcase({
+  index,
+  headline,
+  description,
+  tech,
+  link,
+  screenImage,
+  screenClass,
+}) {
+  const rootRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const screenStyle = screenImage
+    ? { backgroundImage: `url(${publicAsset(screenImage)})` }
+    : undefined;
+
+  return (
+    <li
+      ref={rootRef}
+      className={`project-showcase${visible ? ' is-visible' : ''}`}
+    >
+      <div className="project-showcase__copy">
+        <div className="project-showcase__index" aria-hidden>
+          <span className="project-showcase__index-bar" />
+          <span className="project-showcase__index-num">{index}</span>
+        </div>
+        <h3 className="project-showcase__title">{headline}</h3>
+        <p className="project-showcase__desc">{description}</p>
+        <ul className="project-showcase__tech">
+          {tech.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+        <a className="project-cta" href={link} target="_blank" rel="noopener noreferrer">
+          <span className="project-cta__label">View project</span>
+          <span className="project-cta__arrow" aria-hidden>
+            →
+          </span>
+        </a>
+      </div>
+
+      <div className="project-showcase__stage" aria-hidden>
+        <div className="laptop-stage">
+          <div className="laptop">
+            <div className="laptop-lid">
+              <div className="laptop-bezel">
+                <div
+                  className={`laptop-screen${screenClass ? ` ${screenClass}` : ''}`}
+                  style={screenStyle}
+                />
+              </div>
+            </div>
+            <div className="laptop-base" />
+          </div>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+function PortfolioHome() {
   const [activeSection, setActiveSection] = useState('home');
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [plusFlash, setPlusFlash] = useState(false);
+  const [introDone, setIntroDone] = useState(false);
+  const [scrollIndicatorHidden, setScrollIndicatorHidden] = useState(false);
+
+  const introRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setIntroDone(true), 400);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  useInterval(() => {
+    setRoleIndex((i) => (i + 1) % HERO_ROLES.length);
+  }, 4200);
+
+  const didMountRole = useRef(false);
+  useEffect(() => {
+    if (!didMountRole.current) {
+      didMountRole.current = true;
+      return undefined;
+    }
+    setPlusFlash(true);
+    const id = window.setTimeout(() => setPlusFlash(false), 480);
+    return () => window.clearTimeout(id);
+  }, [roleIndex]);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-      const scrollPosition = window.scrollY + 200;
-      
+      const sections = ['home', 'about', 'projects'];
+      const scrollPosition = window.scrollY + 120;
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
-          const offsetTop = element.offsetTop;
-          const offsetHeight = element.offsetHeight;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
             setActiveSection(section);
             break;
           }
         }
       }
     };
-
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  useEffect(() => {
+    if (location.pathname !== '/') return undefined;
+    const id = location.hash.replace(/^#/, '');
+    if (!id) return undefined;
+    const t = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+    return () => window.clearTimeout(t);
+  }, [location.pathname, location.hash]);
 
-  const skills = [
-    { name: 'JavaScript', level: 90 },
-    { name: 'TypeScript', level: 85 },
-    { name: 'React', level: 90 },
-    { name: 'Next.js', level: 85 },
-    { name: 'Node.js', level: 85 },
-    { name: 'NestJS', level: 80 },
-    { name: 'Python', level: 85 },
-    { name: 'Java', level: 80 },
-    { name: 'MongoDB', level: 85 },
-    { name: 'MySQL', level: 80 },
-    { name: 'Git', level: 90 },
-    { name: 'AWS', level: 75 },
-  ];
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const el = introRef.current;
+    if (!el) return undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => setScrollIndicatorHidden(!entry.isIntersecting),
+      { rootMargin: '-100% 0px 0px 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const scrollToSection = useCallback((sectionId) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   const projects = [
     {
-      title: 'EduManager',
-      description: 'A comprehensive web-based student management system designed to streamline educational administration, enhance student engagement, and improve academic oversight for educational institutions.',
+      index: '01',
+      headline: 'Designing better tools for education',
+      description:
+        'A student management platform to streamline administration, improve engagement, and support academic oversight.',
       tech: ['TypeScript', 'Next.js', 'Tailwind CSS'],
       link: 'https://github.com/sasantha1/EduManager',
-      github: 'https://github.com/sasantha1/EduManager'
+      screenImage: '/images/project-hero-reference.png',
     },
     {
-      title: 'Currency Converter',
-      description: 'Currency Converter Web Application built using React.js that converts currencies in real time using live exchange rates. Simple UI, fast performance, and accurate results.',
-      tech: ['React', 'JavaScript', 'API Integration'],
+      index: '02',
+      headline: 'Clarity for global exchange rates',
+      description:
+        'Real-time currency conversion with live rates — a focused interface that stays fast and easy to scan.',
+      tech: ['React', 'JavaScript', 'REST APIs'],
       link: 'https://github.com/sasantha1/Currency_Converter',
-      github: 'https://github.com/sasantha1/Currency_Converter'
+      screenClass: 'laptop-screen--finance',
     },
     {
-      title: 'POS System',
-      description: 'A comprehensive Point of Sale (POS) system built with React, Express.js, and MongoDB. Features an attractive, modern UI/UX design with all essential POS functionality.',
-      tech: ['React', 'Express.js', 'MongoDB', 'JavaScript'],
+      index: '03',
+      headline: 'Retail flows, rebuilt for the web',
+      description:
+        'A point-of-sale experience with React, Express, and MongoDB — modern UI patterns and dependable checkout paths.',
+      tech: ['React', 'Express.js', 'MongoDB'],
       link: 'https://github.com/sasantha1/Pos-System',
-      github: 'https://github.com/sasantha1/Pos-System'
-    }
+      screenClass: 'laptop-screen--retail',
+    },
   ];
 
+  const currentRole = HERO_ROLES[roleIndex];
+
   return (
-    <div className="App">
-      {/* Navigation */}
-      <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
-        <div className="nav-container">
-          <div className="nav-logo" onClick={() => scrollToSection('home')}>
-            <span className="logo-text">Sasantha Sanju</span>
-          </div>
-          <ul className="nav-menu">
-            <li><a href="#home" className={activeSection === 'home' ? 'active' : ''} onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Home</a></li>
-            <li><a href="#about" className={activeSection === 'about' ? 'active' : ''} onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>About</a></li>
-            <li><a href="#skills" className={activeSection === 'skills' ? 'active' : ''} onClick={(e) => { e.preventDefault(); scrollToSection('skills'); }}>Skills</a></li>
-            <li><a href="#projects" className={activeSection === 'projects' ? 'active' : ''} onClick={(e) => { e.preventDefault(); scrollToSection('projects'); }}>Projects</a></li>
-            <li><a href="#contact" className={activeSection === 'contact' ? 'active' : ''} onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Contact</a></li>
-          </ul>
-        </div>
-      </nav>
+    <div className="app-root">
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
 
-      {/* Hero Section */}
-      <section id="home" className="hero">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1 className="hero-title">
-              <span className="greeting">Hello, I'm</span>
-              <span className="name">Sasantha Sanju</span>
-              <span className="role">Tech Enthusiast | Software Engineer</span>
-            </h1>
-            <p className="hero-description">
-              🚀 Self-starter in IT & Management | On the journey to becoming a Software Engineer.
-              Passionate about creating innovative solutions and building scalable applications
-              that make a difference. I love turning complex problems into simple, beautiful designs.
-            </p>
-            <div className="hero-buttons">
-              <button className="btn btn-primary" onClick={() => scrollToSection('projects')}>
-                View My Work
-              </button>
-              <button className="btn btn-secondary" onClick={() => scrollToSection('contact')}>
-                Get In Touch
-              </button>
+      {menuOpen ? (
+        <div
+          className="nav-backdrop"
+          role="presentation"
+          onClick={() => setMenuOpen(false)}
+          aria-hidden
+        />
+      ) : null}
+
+      <SiteHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} activeSection={activeSection} />
+
+      <main id="main">
+        <section
+          id="home"
+          className="section section-intro"
+          ref={introRef}
+          aria-labelledby="intro-title"
+        >
+          <div className="intro-layout">
+            <div className="intro-sphere" aria-hidden>
+              <Suspense fallback={null}>
+                <DisplacementSphere />
+              </Suspense>
+            </div>
+
+            <div className="intro-hero-copy">
+              <p className="hero-name">
+                <DecoderText text="Sasantha Sanju" start={introDone} />
+              </p>
+
+              <h1 id="intro-title" className="hero-headline">
+                <span className="hero-line hero-line--primary">{HERO_LINE1}</span>
+                <span className="hero-line hero-line--secondary">
+                  <span
+                    className={`hero-plus${plusFlash ? ' is-flash' : ''}`}
+                    aria-hidden
+                  >
+                    +
+                  </span>
+                  <span className="hero-role-slot" aria-live="polite">
+                    <span key={currentRole} className="hero-role-word">
+                      {currentRole}
+                    </span>
+                  </span>
+                </span>
+              </h1>
+
+              <div className="hero-accent" aria-hidden>
+                <span className="hero-accent-line" />
+              </div>
             </div>
           </div>
-          <div className="hero-image">
-            <div className="floating-shapes">
-              <div className="shape shape-1"></div>
-              <div className="shape shape-2"></div>
-              <div className="shape shape-3"></div>
+
+          <a
+            href="#projects"
+            className={`scroll-mouse${scrollIndicatorHidden ? ' is-hidden' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('projects');
+            }}
+            aria-label="Scroll to projects"
+          >
+            <span className="scroll-mouse-outline" />
+          </a>
+        </section>
+
+        <section id="about" className="section section-about" aria-labelledby="about-heading">
+          <div className="about-grid">
+            <div className="about-copy">
+              <h2 id="about-heading" className="about-title">
+                Hi there
+              </h2>
+              <div className="about-prose">
+                <p>
+                  I&apos;m Sasantha, based in{' '}
+                  <Link to="/contact">Colombo, Sri Lanka</Link>, on the path to growing as a
+                  software engineer. My work spans full-stack web apps with React, TypeScript,
+                  and Node, solid APIs, and interfaces that stay clear under real use. Being comfortable
+                  with code helps me prototype and iterate quickly. For things I&apos;ve built,
+                  see my{' '}
+                  <a href="#projects" onClick={(e) => { e.preventDefault(); scrollToSection('projects'); }}>
+                    featured projects
+                  </a>
+                  .
+                </p>
+                <p>
+                  I stay curious about performance, accessibility, and how products feel
+                  for users. I&apos;m always open to hearing about new ideas or roles — feel
+                  free to reach out.
+                </p>
+              </div>
+              <Link to="/contact" className="about-cta" onClick={() => setMenuOpen(false)}>
+                <svg
+                  className="about-cta-icon"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+                Send me a message
+              </Link>
             </div>
-            <div className="profile-photo-container">
-              <div className="profile-photo-wrapper">
-                <img 
-                  src="/profile-photo.jpg" 
-                  alt="Sasantha Sanju" 
-                  className="profile-photo"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'block';
-                  }}
+
+            <aside className="about-visual" aria-label="About portrait">
+              <div className="about-label">
+                <span className="about-label-mark" aria-hidden />
+                <span className="about-label-text">About me</span>
+              </div>
+              <div className="about-photo-frame">
+                <img
+                  src={publicAsset('/images/1.jpg')}
+                  alt="Sasantha Sanju"
+                  className="about-photo"
+                  loading="lazy"
+                  width={480}
+                  height={640}
                 />
-                <div className="profile-card" style={{display: 'none'}}>
-                  <div className="code-snippet">
-                    <div className="code-line">
-                      <span className="code-keyword">const</span> developer = {'{'}
-                    </div>
-                    <div className="code-line indent">
-                      name: <span className="code-string">"Sasantha Sanju"</span>,
-                    </div>
-                    <div className="code-line indent">
-                      location: <span className="code-string">"Badulla, Sri Lanka"</span>,
-                    </div>
-                    <div className="code-line indent">
-                      role: <span className="code-string">"Software Engineer"</span>,
-                    </div>
-                    <div className="code-line indent">
-                      skills: [<span className="code-string">"React"</span>, <span className="code-string">"TypeScript"</span>, <span className="code-string">"Node.js"</span>]
-                    </div>
-                    <div className="code-line">{'}'}</div>
-                  </div>
-                </div>
               </div>
-            </div>
+            </aside>
           </div>
-        </div>
-        <div className="scroll-indicator">
-          <div className="mouse"></div>
-        </div>
-      </section>
+        </section>
 
-      {/* About Section */}
-      <section id="about" className="about">
-        <div className="container">
-          <h2 className="section-title">About Me</h2>
-          <div className="about-content">
-            <div className="about-text">
-              <p>
-                I'm a tech enthusiast and self-starter in IT & Management, currently on an exciting journey 
-                to become a Software Engineer. With a passion for creating elegant solutions to complex problems, 
-                I bring ideas to life through clean, efficient code.
-              </p>
-              <p>
-                My expertise spans both frontend and backend development, working with modern technologies like 
-                React, TypeScript, Next.js, NestJS, Python, and various cloud services. I'm constantly learning 
-                and staying up-to-date with industry best practices to deliver high-quality applications.
-              </p>
-              <p>
-                Based in Colombo, Sri Lanka, I'm always open to new opportunities, collaborations, and projects 
-                that challenge me to grow as a developer.
-              </p>
-              <div className="about-stats">
-                <div className="stat-item">
-                  <div className="stat-number">4+</div>
-                  <div className="stat-label">Repositories</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-number">6+</div>
-                  <div className="stat-label">Technologies</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-number">3+</div>
-                  <div className="stat-label">Featured Projects</div>
-                </div>
-              </div>
-            </div>
+        <section
+          id="projects"
+          className="section section-projects"
+          aria-labelledby="projects-heading"
+        >
+          <div className="section-inner">
+            <p className="section-label">Projects</p>
+            <h2 id="projects-heading" className="section-heading">
+              Selected work
+            </h2>
+            <ul className="project-showcase-list">
+              {projects.map((project) => (
+                <ProjectShowcase
+                  key={project.index}
+                  index={project.index}
+                  headline={project.headline}
+                  description={project.description}
+                  tech={project.tech}
+                  link={project.link}
+                  screenImage={project.screenImage}
+                  screenClass={project.screenClass}
+                />
+              ))}
+            </ul>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* Skills Section */}
-      <section id="skills" className="skills">
-        <div className="container">
-          <h2 className="section-title">Skills & Technologies</h2>
-          <div className="skills-grid">
-            {skills.map((skill, index) => (
-              <div key={index} className="skill-item">
-                <div className="skill-header">
-                  <span className="skill-name">{skill.name}</span>
-                  <span className="skill-percentage">{skill.level}%</span>
-                </div>
-                <div className="skill-bar">
-                  <div 
-                    className="skill-progress" 
-                    style={{ width: `${skill.level}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="tech-tags">
-            <span className="tech-tag">TypeScript</span>
-            <span className="tech-tag">Next.js</span>
-            <span className="tech-tag">Tailwind CSS</span>
-            <span className="tech-tag">NestJS</span>
-            <span className="tech-tag">Python</span>
-            <span className="tech-tag">Amazon Web Services</span>
-            <span className="tech-tag">Android</span>
-            <span className="tech-tag">Flutter</span>
-            <span className="tech-tag">React</span>
-            <span className="tech-tag">Node.js</span>
-            <span className="tech-tag">JavaScript</span>
-            <span className="tech-tag">Java</span>
-            <span className="tech-tag">MongoDB</span>
-            <span className="tech-tag">MySQL</span>
-            <span className="tech-tag">Git</span>
-            <span className="tech-tag">C</span>
-            <span className="tech-tag">C#</span>
-            <span className="tech-tag">Arduino</span>
-            <span className="tech-tag">WordPress</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="projects">
-        <div className="container">
-          <h2 className="section-title">Featured Projects</h2>
-          <div className="projects-grid">
-            {projects.map((project, index) => (
-              <div key={index} className="project-card">
-                <div className="project-header">
-                  <h3 className="project-title">{project.title}</h3>
-                  <div className="project-links">
-                    <a href={project.link} className="project-link" target="_blank" rel="noopener noreferrer">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                      </svg>
-                    </a>
-                    <a href={project.github} className="project-link" target="_blank" rel="noopener noreferrer">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-                <p className="project-description">{project.description}</p>
-                <div className="project-tech">
-                  {project.tech.map((tech, techIndex) => (
-                    <span key={techIndex} className="project-tech-tag">{tech}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="contact">
-        <div className="container">
-          <h2 className="section-title">Get In Touch</h2>
-          <div className="contact-content">
-            <div className="contact-info">
-              <p className="contact-description">
-                I'm always open to discussing new projects, creative ideas, or opportunities
-                to be part of your visions. Feel free to reach out!
-              </p>
-              <div className="contact-methods">
-                <a href="https://linkedin.com/in/sasantha-sanju-226946357" className="contact-item" target="_blank" rel="noopener noreferrer">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                  </svg>
-                  <span>LinkedIn Profile</span>
-                </a>
-                <a href="https://github.com/sasantha1" className="contact-item" target="_blank" rel="noopener noreferrer">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                  <span>GitHub Profile</span>
-                </a>
-                <div className="contact-item">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                  <span>Colombo, Sri Lanka</span>
-                </div>
-              </div>
-            </div>
-            <form className="contact-form">
-              <div className="form-group">
-                <input type="text" placeholder="Your Name" className="form-input" />
-              </div>
-              <div className="form-group">
-                <input type="email" placeholder="Your Email" className="form-input" />
-              </div>
-              <div className="form-group">
-                <textarea placeholder="Your Message" rows="5" className="form-input"></textarea>
-              </div>
-              <button type="submit" className="btn btn-primary">Send Message</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <p>&copy; 2024 Sasantha Sanju. All rights reserved. | <a href="https://github.com/sasantha1" target="_blank" rel="noopener noreferrer" style={{color: 'white', textDecoration: 'underline'}}>GitHub</a></p>
-        </div>
+      <footer className="site-footer">
+        <p>© {new Date().getFullYear()} Sasantha Sanju.</p>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  const basename = (process.env.PUBLIC_URL || '').replace(/\/$/, '') || undefined;
+  return (
+    <BrowserRouter basename={basename}>
+      <Routes>
+        <Route path="/" element={<PortfolioHome />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
