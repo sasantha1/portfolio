@@ -204,12 +204,12 @@ function PortfolioHome() {
   const projects = [
     {
       index: '01',
-      headline: 'Designing better tools for education',
+      headline: 'Next-generation retail point of sale',
       description:
-        'A student management platform to streamline administration, improve engagement, and support academic oversight.',
-      tech: ['TypeScript', 'Next.js', 'Tailwind CSS'],
-      link: 'https://github.com/sasantha1/EduManager',
-      screenImage: '/images/project-hero-reference.png',
+        'A streamlined, high-performance retail POS platform featuring instant category filtering, real-time cart checkout, and an intuitive dark-themed UI.',
+      tech: ['React', 'JavaScript', 'CSS'],
+      link: 'https://github.com/sasantha1/NexPos',
+      screenImage: '/images/nexpos.png',
     },
     {
       index: '02',

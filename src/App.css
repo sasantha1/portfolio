@@ -1,4 +1,4 @@
-/* Hamish Williams portfolio–inspired theme (dark). See footer for attribution. */
+
 
 :root {
   --black: oklch(0% 0 0);
@@ -371,6 +371,9 @@
   min-width: 0.25em;
   overflow: hidden;
   vertical-align: baseline;
+  flex-shrink: 0;
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
 }
 
 .hero-role-word {
@@ -1079,14 +1082,17 @@
 .say-hello-page {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(48px, 10vh, 120px) var(--space-outer);
+  justify-content: flex-start;
+  padding: clamp(100px, 14vh, 160px) var(--space-outer) clamp(40px, 6vh, 80px);
 }
 
 .say-hello-form {
   width: 100%;
   max-width: 520px;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .say-hello-title {
@@ -1215,4 +1221,66 @@
 ::selection {
   background: var(--accent);
   color: var(--black);
+}
+
+.say-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.say-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--black);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: say-spin 0.6s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes say-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.say-success-container {
+  width: 100%;
+  max-width: 520px;
+  margin-top: auto;
+  margin-bottom: auto;
+  animation: say-fade-in 0.5s var(--bezier-fastout-slowin) forwards;
+}
+
+.say-success-message {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--text-body);
+  margin-bottom: 2rem;
+}
+
+.say-error-banner {
+  padding: 1rem;
+  margin-bottom: 2rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgb(239, 68, 68);
+  border-radius: 4px;
+  color: rgb(239, 68, 68);
+  font-size: 0.95rem;
+  animation: say-fade-in 0.3s ease;
+}
+
+@keyframes say-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
