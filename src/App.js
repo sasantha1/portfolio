@@ -314,7 +314,7 @@ function PortfolioHome() {
               <div className="about-prose">
                 <p>
                   I&apos;m Sasantha, based in{' '}
-                  <Link to="/contact">Colombo, Sri Lanka</Link>, on the path to growing as a
+                  Colombo, Sri Lanka, on the path to growing as a
                   software engineer. My work spans full-stack web apps with React, TypeScript,
                   and Node, solid APIs, and interfaces that stay clear under real use. Being comfortable
                   with code helps me prototype and iterate quickly. For things I&apos;ve built,
@@ -326,7 +326,7 @@ function PortfolioHome() {
                 </p>
                 <p>
                   I stay curious about performance, accessibility, and how products feel
-                  for users. I&apos;m always open to hearing about new ideas or roles — feel
+                  for users. I&apos;m always open to hearing about new ideas or roles feel
                   free to reach out.
                 </p>
               </div>
