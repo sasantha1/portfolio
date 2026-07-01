@@ -213,21 +213,39 @@ function PortfolioHome() {
     },
     {
       index: '02',
-      headline: 'Clarity for global exchange rates',
+      headline: 'Find your dream vehicle at auction',
       description:
-        'Real-time currency conversion with live rates — a focused interface that stays fast and easy to scan.',
-      tech: ['React', 'JavaScript', 'REST APIs'],
-      link: 'https://github.com/sasantha1/Currency_Converter',
-      screenClass: 'laptop-screen--finance',
+        'A premium vehicle auction platform with secure bidding, real-time inventory browsing, watchlist management, and transparent sales — built for buyers and verified sellers.',
+      tech: ['React', 'Vite', 'JavaScript'],
+      link: 'https://github.com/NilangaAbhisheka/MotorMart',
+      screenImage: '/images/motormart.png',
     },
     {
       index: '03',
-      headline: 'Retail flows, rebuilt for the web',
+      headline: 'Designing better tools for education',
       description:
-        'A point-of-sale experience with React, Express, and MongoDB — modern UI patterns and dependable checkout paths.',
-      tech: ['React', 'Express.js', 'MongoDB'],
-      link: 'https://github.com/sasantha1/Pos-System',
-      screenClass: 'laptop-screen--retail',
+        'A student management platform to streamline administration, improve engagement, and support academic oversight.',
+      tech: ['TypeScript', 'Next.js', 'Tailwind CSS'],
+      link: 'https://github.com/sasantha1/EduManager',
+      screenImage: '/images/edumanager.png',
+    },
+    {
+      index: '04',
+      headline: 'Connecting students through university culture',
+      description:
+        'A comprehensive university cultural platform for NSBM Green University — connecting students with clubs, societies, resources, senior-junior networks, and campus finance tools.',
+      tech: ['HTML', 'CSS', 'JavaScript'],
+      link: 'https://github.com/TharinduThilakshana0thildezo/Uni-Culture-UC-1.0',
+      screenImage: '/images/uni-culture.png',
+    },
+    {
+      index: '05',
+      headline: "Sri Lanka's trusted construction contract platform",
+      description:
+        'A national construction contract platform connecting vetted Sri Lankan contractors, engineers, and suppliers — with transparent pricing, CIDA-compliant workflows, and secure payments.',
+      tech: ['React', 'Vite', 'JavaScript'],
+      link: 'https://github.com/TharinduThilakshana0thildezo/Constrct_TDz.lk',
+      screenImage: '/images/constrct.png',
     },
   ];
 
