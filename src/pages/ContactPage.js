@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SiteFooter } from '../components/SiteFooter';
 import { SiteHeader } from '../components/SiteHeader';
 import '../App.css';
 
@@ -171,9 +172,7 @@ export function ContactPage() {
           </form>
         )}
       </main>
-      <footer className="site-footer site-footer--contact">
-        <p>© {new Date().getFullYear()} Sasantha Sanju.</p>
-      </footer>
+      <SiteFooter variant="contact" />
     </div>
   );
 }

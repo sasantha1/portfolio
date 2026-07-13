@@ -9,6 +9,7 @@ import React, {
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import { DecoderText } from './components/DecoderText';
+import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { ContactPage } from './pages/ContactPage';
 
@@ -38,15 +39,7 @@ function publicAsset(path) {
   return `${base}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-function ProjectShowcase({
-  index,
-  headline,
-  description,
-  tech,
-  link,
-  screenImage,
-  screenClass,
-}) {
+function ProjectCard({ headline, description, tech, link, screenImage }) {
   const rootRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -66,50 +59,39 @@ function ProjectShowcase({
     return () => io.disconnect();
   }, []);
 
-  const screenStyle = screenImage
-    ? { backgroundImage: `url(${publicAsset(screenImage)})` }
-    : undefined;
-
   return (
-    <li
-      ref={rootRef}
-      className={`project-showcase${visible ? ' is-visible' : ''}`}
-    >
-      <div className="project-showcase__copy">
-        <div className="project-showcase__index" aria-hidden>
-          <span className="project-showcase__index-bar" />
-          <span className="project-showcase__index-num">{index}</span>
-        </div>
-        <h3 className="project-showcase__title">{headline}</h3>
-        <p className="project-showcase__desc">{description}</p>
-        <ul className="project-showcase__tech">
-          {tech.map((t) => (
-            <li key={t}>{t}</li>
-          ))}
-        </ul>
-        <a className="project-cta" href={link} target="_blank" rel="noopener noreferrer">
-          <span className="project-cta__label">View project</span>
-          <span className="project-cta__arrow" aria-hidden>
-            →
-          </span>
-        </a>
-      </div>
-
-      <div className="project-showcase__stage" aria-hidden>
-        <div className="laptop-stage">
-          <div className="laptop">
-            <div className="laptop-lid">
-              <div className="laptop-bezel">
-                <div
-                  className={`laptop-screen${screenClass ? ` ${screenClass}` : ''}`}
-                  style={screenStyle}
-                />
-              </div>
-            </div>
-            <div className="laptop-base" />
+    <li ref={rootRef} className={`project-card${visible ? ' is-visible' : ''}`}>
+      <a
+        className="project-card__link"
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="project-card__image-wrap">
+          <img
+            src={publicAsset(screenImage)}
+            alt={`${headline} — screenshot`}
+            className="project-card__image"
+            loading="lazy"
+          />
+          <div className="project-card__overlay" aria-hidden>
+            <span className="project-card__view">
+              View project
+              <span className="project-card__arrow">→</span>
+            </span>
           </div>
         </div>
-      </div>
+
+        <div className="project-card__body">
+          <h3 className="project-card__title">{headline}</h3>
+          <p className="project-card__desc">{description}</p>
+          <ul className="project-card__tech">
+            {tech.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      </a>
     </li>
   );
 }
@@ -246,6 +228,15 @@ function PortfolioHome() {
       tech: ['React', 'Vite', 'JavaScript'],
       link: 'https://github.com/TharinduThilakshana0thildezo/Constrct_TDz.lk',
       screenImage: '/images/constrct.png',
+    },
+    {
+      index: '06',
+      headline: 'AI-powered farming companion, in your pocket',
+      description:
+        'A Flutter mobile app for Sri Lankan farmers featuring AI crop diagnosis, weather-based farming alerts, a community forum, an AI chat assistant, and a marketplace — built as a university group project.',
+      tech: ['Flutter', 'Dart', 'Firebase'],
+      link: 'https://github.com/malshanchanu/GoviMaga-Mobile-App-Flutter',
+      screenImage: '/images/govimaga.png',
     },
   ];
 
@@ -397,17 +388,15 @@ function PortfolioHome() {
             <h2 id="projects-heading" className="section-heading">
               Selected work
             </h2>
-            <ul className="project-showcase-list">
+            <ul className="project-grid">
               {projects.map((project) => (
-                <ProjectShowcase
+                <ProjectCard
                   key={project.index}
-                  index={project.index}
                   headline={project.headline}
                   description={project.description}
                   tech={project.tech}
                   link={project.link}
                   screenImage={project.screenImage}
-                  screenClass={project.screenClass}
                 />
               ))}
             </ul>
@@ -415,9 +404,7 @@ function PortfolioHome() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <p>© {new Date().getFullYear()} Sasantha Sanju.</p>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
