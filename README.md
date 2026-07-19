@@ -1,70 +1,82 @@
-# Getting Started with Create React App
+# Portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+My personal developer portfolio website — a single-page React app with a hero
+section featuring an animated WebGL sphere, a projects showcase, and a
+contact page.
 
-## Available Scripts
+🔗 Live site: [sasantha1.github.io/portfolio](https://sasantha1.github.io/portfolio)
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Animated, distorted-sphere hero built with **Three.js**
+- Decoding/scramble text effect for the intro headline
+- Scroll-reveal project cards with screenshots, tech tags, and repo links
+- Client-side routing (`/` and `/contact`) via **React Router**
+- Responsive layout with a mobile nav menu
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- [React](https://reactjs.org/) 19
+- [React Router](https://reactrouter.com/) 6
+- [Three.js](https://threejs.org/) for the WebGL hero animation
+- [Create React App](https://github.com/facebook/create-react-app) (react-scripts) for tooling
 
-### `npm test`
+## Project Structure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+public/
+  images/           project screenshots
+  shaders/          GLSL shaders for the hero sphere
+  resume.pdf
+src/
+  components/
+    DecoderText.js        scramble/decode text animation
+    DisplacementSphere.js Three.js hero sphere
+    SiteHeader.js
+    SiteFooter.js
+  pages/
+    ContactPage.js
+  App.js            main page: hero, projects, layout
+  App.css
+```
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- [Node.js](https://nodejs.org/) and npm
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Installation
 
-### `npm run eject`
+```bash
+git clone https://github.com/sasantha1/portfolio.git
+cd portfolio
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Available Scripts
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| Command | Description |
+|---|---|
+| `npm start` | Runs the app in development mode at [http://localhost:3000](http://localhost:3000) |
+| `npm test` | Launches the test runner in interactive watch mode |
+| `npm run build` | Builds the app for production into the `build` folder |
+| `npm run eject` | Ejects the Create React App configuration (one-way operation) |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Deployment
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The site is configured to deploy to GitHub Pages via the `homepage` field in
+`package.json`. Build the production bundle with `npm run build`, then deploy
+the contents of the `build` folder to the `gh-pages` branch (e.g. using the
+[`gh-pages`](https://www.npmjs.com/package/gh-pages) package).
 
-## Learn More
+## Projects Featured
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The portfolio showcases several projects, including a retail POS platform, a
+vehicle auction site, a student management system, a university culture
+platform, a construction contract platform, and an AI-powered farming
+companion app. See the [Projects section on the live site](https://sasantha1.github.io/portfolio) for details and links.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## License
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is for personal portfolio use. Feel free to explore the code for inspiration.
